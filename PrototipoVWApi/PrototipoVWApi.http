@@ -1,0 +1,6 @@
+@PrototipoVWApi_HostAddress = http://localhost:5091
+
+GET {{PrototipoVWApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

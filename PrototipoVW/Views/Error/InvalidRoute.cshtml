@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "Ruta inválida";
+}
+
+<div style="max-width: 500px; margin: 80px auto; text-align: center;">
+    <h2>Ruta inválida</h2>
+
+    <p>La ruta ingresada no existe o no tiene permisos para acceder.</p>
+
+    <p>La sesión fue cerrada por seguridad.</p>
+
+    <p>Será redirigido al login en <strong id="contador">5</strong> segundos.</p>
+</div>
+
+<script>
+    let segundos = 5;
+
+    const intervalo = setInterval(() => {
+        segundos--;
+        document.getElementById("contador").innerText = segundos;
+
+        if (segundos <= 0) {
+            clearInterval(intervalo);
+            window.location.href = "/Auth/Login";
+        }
+    }, 1000);
+</script>

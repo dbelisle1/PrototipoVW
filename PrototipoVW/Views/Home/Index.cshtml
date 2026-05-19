@@ -1,0 +1,15 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<h2>Estas en el home como @ViewBag.Rol</h2>
+
+<p>Bienvenido, @ViewBag.NombreCompleto</p>
+
+<form asp-action="Logout" asp-controller="Auth" method="post">
+    @Html.AntiForgeryToken()
+
+    <button type="submit" class="btn btn-danger">
+        Cerrar sesión
+    </button>
+</form>

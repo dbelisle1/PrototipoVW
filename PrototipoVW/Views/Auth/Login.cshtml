@@ -1,0 +1,33 @@
+﻿@model PrototipoVW.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div style="max-width: 400px; margin: 80px auto;">
+    <h2>Ingreso al sistema</h2>
+
+    <form asp-action="Login" asp-controller="Auth" method="post">
+        @Html.AntiForgeryToken()
+
+        <div style="margin-bottom: 15px;">
+            <label>Correo</label>
+            <input asp-for="Correo" class="form-control" />
+            <span asp-validation-for="Correo" class="text-danger"></span>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label>Contraseña</label>
+            <input asp-for="Contrasena" type="password" class="form-control" />
+            <span asp-validation-for="Contrasena" class="text-danger"></span>
+        </div>
+
+        <div class="text-danger">
+            @Html.ValidationSummary()
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Ingresar
+        </button>
+    </form>
+</div>
