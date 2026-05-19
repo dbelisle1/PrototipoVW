@@ -306,6 +306,22 @@ namespace PrototipoVW.Services
             return response.IsSuccessStatusCode;
         }
 
+        public async Task<ReporteDashboardViewModel> ObtenerReporteDashboardAsync()
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, "api/reportes/dashboard");
+            AgregarHeadersSesion(request);
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return new ReporteDashboardViewModel();
+            }
+
+            var reporte = await response.Content.ReadFromJsonAsync<ReporteDashboardViewModel>(JsonOptions);
+
+            return reporte ?? new ReporteDashboardViewModel();
+        }
 
         private void AgregarHeadersSesion(HttpRequestMessage request)
         {

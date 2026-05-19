@@ -1,0 +1,185 @@
+﻿@model PrototipoVW.Models.ReporteDashboardViewModel
+
+@{
+    ViewData["Title"] = "Reportes";
+}
+
+<h2>Reportes</h2>
+
+<div class="row mb-4">
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6>Total</h6>
+                <h3>@Model.Resumen.TotalPropuestas</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6>Pendientes</h6>
+                <h3>@Model.Resumen.TotalPendientes</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6>Aprobadas</h6>
+                <h3>@Model.Resumen.TotalAprobadas</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6>Rechazadas</h6>
+                <h3>@Model.Resumen.TotalRechazadas</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6>Completadas</h6>
+                <h3>@Model.Resumen.TotalCompletadas</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5>Presupuesto total solicitado</h5>
+                <h3>@Model.Resumen.PresupuestoTotalSolicitado.ToString("N2")</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5>Presupuesto total aprobado</h5>
+                <h3>@Model.Resumen.PresupuestoTotalAprobado.ToString("N2")</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h4>Propuestas por estado</h4>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Estado</th>
+            <th>Cantidad</th>
+            <th>Presupuesto solicitado</th>
+            <th>Presupuesto aprobado</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.PropuestasPorEstado.Count == 0)
+        {
+            <tr>
+                <td colspan="4" class="text-center">
+                    No hay información para mostrar.
+                </td>
+            </tr>
+        }
+        else
+        {
+            foreach (var item in Model.PropuestasPorEstado)
+            {
+                <tr>
+                    <td>@item.Estado</td>
+                    <td>@item.Cantidad</td>
+                    <td>@item.PresupuestoSolicitado.ToString("N2")</td>
+                    <td>@item.PresupuestoAprobado.ToString("N2")</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<h4 class="mt-4">Presupuesto por área solicitante</h4>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Área</th>
+            <th>Cantidad de propuestas</th>
+            <th>Presupuesto solicitado</th>
+            <th>Presupuesto aprobado</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.PresupuestoPorArea.Count == 0)
+        {
+            <tr>
+                <td colspan="4" class="text-center">
+                    No hay información para mostrar.
+                </td>
+            </tr>
+        }
+        else
+        {
+            foreach (var item in Model.PresupuestoPorArea)
+            {
+                <tr>
+                    <td>@item.AreaSolicitante</td>
+                    <td>@item.CantidadPropuestas</td>
+                    <td>@item.PresupuestoSolicitado.ToString("N2")</td>
+                    <td>@item.PresupuestoAprobado.ToString("N2")</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<h4 class="mt-4">Proyectos completados</h4>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Proyecto</th>
+            <th>Área</th>
+            <th>Presupuesto aprobado</th>
+            <th>Completado por</th>
+            <th>Fecha completado</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.ProyectosCompletados.Count == 0)
+        {
+            <tr>
+                <td colspan="5" class="text-center">
+                    No hay proyectos completados.
+                </td>
+            </tr>
+        }
+        else
+        {
+            foreach (var item in Model.ProyectosCompletados)
+            {
+                <tr>
+                    <td>@item.NombreProyecto</td>
+                    <td>@item.AreaSolicitante</td>
+                    <td>@item.PresupuestoAprobado.ToString("N2")</td>
+                    <td>@item.CompletadoPor</td>
+                    <td>
+                        @(item.FechaCompletado.HasValue
+                            ? item.FechaCompletado.Value.ToString("dd/MM/yyyy HH:mm")
+                            : "-")
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

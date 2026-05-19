@@ -6,6 +6,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<AuthRepository>();
 builder.Services.AddScoped<UsuariosRepository>();
 builder.Services.AddScoped<PropuestasRepository>();
+builder.Services.AddScoped<ReportesRepository>();
 
 var app = builder.Build();
 
