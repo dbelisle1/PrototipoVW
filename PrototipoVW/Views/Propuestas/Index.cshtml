@@ -1,0 +1,117 @@
+﻿@model List<PrototipoVW.Models.PropuestaListItemViewModel>
+
+@{
+    ViewData["Title"] = "Propuestas";
+
+    var rol = ViewBag.Rol as string;
+    var idUsuario = ViewBag.IdUsuario as int?;
+
+    var puedeAgregar = rol == "Admin" || rol == "Empleado";
+    var puedeVer = rol == "Supervisor";
+}
+
+<h2>Propuestas de proyectos</h2>
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Mensaje"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+@if (puedeAgregar)
+{
+    <div class="mb-3">
+        <a asp-action="Create" asp-controller="Propuestas" class="btn btn-primary">
+            Agregar
+        </a>
+    </div>
+}
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Proyecto</th>
+            <th>Área</th>
+            <th>Creador</th>
+            <th>Estado</th>
+            <th>Presupuesto solicitado</th>
+            <th>Presupuesto aprobado</th>
+            <th>Fecha creación</th>
+            <th style="width: 220px;">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Count == 0)
+        {
+            <tr>
+                <td colspan="8" class="text-center">
+                    No hay propuestas registradas.
+                </td>
+            </tr>
+        }
+        else
+        {
+            foreach (var propuesta in Model)
+            {
+                var puedeModificar =
+                propuesta.Estado == "Pendiente" &&
+                (
+                rol == "Admin" ||
+                (rol == "Empleado" && propuesta.IdCreador == idUsuario)
+                );
+
+                <tr>
+                    <td>@propuesta.NombreProyecto</td>
+                    <td>@propuesta.AreaSolicitante</td>
+                    <td>@propuesta.Creador</td>
+                    <td>@propuesta.Estado</td>
+                    <td>@propuesta.PresupuestoSolicitado.ToString("N2")</td>
+                    <td>@propuesta.PresupuestoAprobado.ToString("N2")</td>
+                    <td>@propuesta.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>
+                        @if (puedeVer)
+                        {
+                            <a asp-action="Ver"
+                               asp-controller="Propuestas"
+                               asp-route-id="@propuesta.IdPropuesta"
+                               class="btn btn-sm btn-info">
+                                Ver
+                            </a>
+                        }
+
+                        @if (puedeModificar)
+                        {
+                            <a asp-action="Edit"
+                               asp-controller="Propuestas"
+                               asp-route-id="@propuesta.IdPropuesta"
+                               class="btn btn-sm btn-warning">
+                                Modificar
+                            </a>
+
+                            <form asp-action="Delete"
+                                  asp-controller="Propuestas"
+                                  asp-route-id="@propuesta.IdPropuesta"
+                                  method="post"
+                                  style="display:inline;"
+                                  onsubmit="return confirm('¿Está seguro de eliminar esta propuesta?');">
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    Eliminar
+                                </button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

@@ -1,0 +1,71 @@
+﻿@model PrototipoVW.Models.PropuestaFormViewModel
+
+@{
+    var esEdicion = Model.IdPropuesta > 0;
+    var soloLectura = ViewBag.SoloLectura == true;
+
+    ViewData["Title"] = soloLectura
+        ? "Ver propuesta"
+        : esEdicion
+            ? "Modificar propuesta"
+            : "Agregar propuesta";
+
+    var accion = esEdicion ? "Edit" : "Create";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="@accion" asp-controller="Propuestas" method="post">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="IdPropuesta" />
+
+    <div class="mb-3">
+        <label asp-for="NombreProyecto" class="form-label">Nombre del proyecto</label>
+        <input asp-for="NombreProyecto" class="form-control" readonly="@soloLectura" />
+        <span asp-validation-for="NombreProyecto" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Descripcion" class="form-label">Descripción</label>
+        <textarea asp-for="Descripcion" class="form-control" rows="3" readonly="@soloLectura"></textarea>
+        <span asp-validation-for="Descripcion" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="AreaSolicitante" class="form-label">Área solicitante</label>
+        <input asp-for="AreaSolicitante" class="form-control" readonly="@soloLectura" />
+        <span asp-validation-for="AreaSolicitante" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Justificacion" class="form-label">Justificación</label>
+        <textarea asp-for="Justificacion" class="form-control" rows="3" readonly="@soloLectura"></textarea>
+        <span asp-validation-for="Justificacion" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="PresupuestoSolicitado" class="form-label">Presupuesto solicitado</label>
+        <input asp-for="PresupuestoSolicitado"
+               class="form-control"
+               type="number"
+               step="0.01"
+               readonly="@soloLectura" />
+        <span asp-validation-for="PresupuestoSolicitado" class="text-danger"></span>
+    </div>
+
+    <div class="text-danger mb-3">
+        @Html.ValidationSummary()
+    </div>
+
+    @if (!soloLectura)
+    {
+        <button type="submit" class="btn btn-success">
+            Guardar
+        </button>
+    }
+
+    <a asp-action="Index" asp-controller="Propuestas" class="btn btn-secondary">
+        @(soloLectura ? "Regresar" : "Cancelar")
+    </a>
+</form>

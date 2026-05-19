@@ -137,5 +137,85 @@ namespace PrototipoVW.Services
                 request.Headers.Add("X-User-Role", rol);
             }
         }
+
+        public async Task<List<PropuestaListItemViewModel>> ListarPropuestasAsync()
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, "api/propuestas");
+            AgregarHeadersSesion(request);
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return new List<PropuestaListItemViewModel>();
+            }
+
+            var propuestas = await response.Content.ReadFromJsonAsync<List<PropuestaListItemViewModel>>(JsonOptions);
+
+            return propuestas ?? new List<PropuestaListItemViewModel>();
+        }
+
+        public async Task<PropuestaFormViewModel?> ObtenerPropuestaPorIdAsync(int idPropuesta)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, $"api/propuestas/{idPropuesta}");
+            AgregarHeadersSesion(request);
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            return await response.Content.ReadFromJsonAsync<PropuestaFormViewModel>(JsonOptions);
+        }
+
+        public async Task<bool> CrearPropuestaAsync(PropuestaFormViewModel model)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Post, "api/propuestas");
+            AgregarHeadersSesion(request);
+
+            request.Content = JsonContent.Create(new
+            {
+                model.NombreProyecto,
+                model.Descripcion,
+                model.AreaSolicitante,
+                model.Justificacion,
+                model.PresupuestoSolicitado
+            });
+
+            var response = await _httpClient.SendAsync(request);
+
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> ActualizarPropuestaAsync(PropuestaFormViewModel model)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Put, $"api/propuestas/{model.IdPropuesta}");
+            AgregarHeadersSesion(request);
+
+            request.Content = JsonContent.Create(new
+            {
+                model.NombreProyecto,
+                model.Descripcion,
+                model.AreaSolicitante,
+                model.Justificacion,
+                model.PresupuestoSolicitado
+            });
+
+            var response = await _httpClient.SendAsync(request);
+
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> EliminarPropuestaAsync(int idPropuesta)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Delete, $"api/propuestas/{idPropuesta}");
+            AgregarHeadersSesion(request);
+
+            var response = await _httpClient.SendAsync(request);
+
+            return response.IsSuccessStatusCode;
+        }
     }
 }

@@ -36,6 +36,14 @@
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Usuarios" asp-action="Index">Usuarios</a>
                                 </li>
                             }
+                            @if (rol == "Admin" || rol == "Empleado" || rol == "Supervisor")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Propuestas" asp-action="Index">
+                                        Propuestas
+                                    </a>
+                                </li>
+                            }
                         }
                     </ul>
                 </div>
