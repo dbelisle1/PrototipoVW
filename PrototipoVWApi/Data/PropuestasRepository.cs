@@ -112,37 +112,19 @@ public class PropuestasRepository
         await command.ExecuteNonQueryAsync();
     }
 
-    private static PropuestaDto MapearPropuesta(SqlDataReader reader)
+    public async Task CompletarAsync(int idPropuesta, int idUsuarioCompletado)
     {
-        return new PropuestaDto
-        {
-            IdPropuesta = Convert.ToInt32(reader["IdPropuesta"]),
+        await using var connection = new SqlConnection(_connectionString);
+        await using var command = new SqlCommand("dbo.sp_CompletarProyecto", connection);
 
-            IdCreador = Convert.ToInt32(reader["IdCreador"]),
-            Creador = reader["Creador"].ToString() ?? "",
+        command.CommandType = CommandType.StoredProcedure;
+        command.Parameters.Add("@IdPropuesta", SqlDbType.Int).Value = idPropuesta;
+        command.Parameters.Add("@IdUsuarioCompletado", SqlDbType.Int).Value = idUsuarioCompletado;
 
-            IdRevisor = reader["IdRevisor"] == DBNull.Value ? null : Convert.ToInt32(reader["IdRevisor"]),
-            Revisor = reader["Revisor"] == DBNull.Value ? null : reader["Revisor"].ToString(),
-
-            IdCompletadoPor = reader["IdCompletadoPor"] == DBNull.Value ? null : Convert.ToInt32(reader["IdCompletadoPor"]),
-            CompletadoPor = reader["CompletadoPor"] == DBNull.Value ? null : reader["CompletadoPor"].ToString(),
-
-            NombreProyecto = reader["NombreProyecto"].ToString() ?? "",
-            Descripcion = reader["Descripcion"] == DBNull.Value ? null : reader["Descripcion"].ToString(),
-            AreaSolicitante = reader["AreaSolicitante"].ToString() ?? "",
-            Justificacion = reader["Justificacion"] == DBNull.Value ? null : reader["Justificacion"].ToString(),
-
-            PresupuestoSolicitado = Convert.ToDecimal(reader["PresupuestoSolicitado"]),
-            PresupuestoAprobado = Convert.ToDecimal(reader["PresupuestoAprobado"]),
-
-            Estado = reader["Estado"].ToString() ?? "",
-            ComentarioRevision = reader["ComentarioRevision"] == DBNull.Value ? null : reader["ComentarioRevision"].ToString(),
-
-            FechaCreacion = Convert.ToDateTime(reader["FechaCreacion"]),
-            FechaRevision = reader["FechaRevision"] == DBNull.Value ? null : Convert.ToDateTime(reader["FechaRevision"]),
-            FechaCompletado = reader["FechaCompletado"] == DBNull.Value ? null : Convert.ToDateTime(reader["FechaCompletado"])
-        };
+        await connection.OpenAsync();
+        await command.ExecuteNonQueryAsync();
     }
+
     public async Task AprobarAsync(
     int idPropuesta,
     int idUsuarioRevisor,
@@ -181,5 +163,37 @@ public class PropuestasRepository
         await command.ExecuteNonQueryAsync();
     }
 
+
+    private static PropuestaDto MapearPropuesta(SqlDataReader reader)
+    {
+        return new PropuestaDto
+        {
+            IdPropuesta = Convert.ToInt32(reader["IdPropuesta"]),
+
+            IdCreador = Convert.ToInt32(reader["IdCreador"]),
+            Creador = reader["Creador"].ToString() ?? "",
+
+            IdRevisor = reader["IdRevisor"] == DBNull.Value ? null : Convert.ToInt32(reader["IdRevisor"]),
+            Revisor = reader["Revisor"] == DBNull.Value ? null : reader["Revisor"].ToString(),
+
+            IdCompletadoPor = reader["IdCompletadoPor"] == DBNull.Value ? null : Convert.ToInt32(reader["IdCompletadoPor"]),
+            CompletadoPor = reader["CompletadoPor"] == DBNull.Value ? null : reader["CompletadoPor"].ToString(),
+
+            NombreProyecto = reader["NombreProyecto"].ToString() ?? "",
+            Descripcion = reader["Descripcion"] == DBNull.Value ? null : reader["Descripcion"].ToString(),
+            AreaSolicitante = reader["AreaSolicitante"].ToString() ?? "",
+            Justificacion = reader["Justificacion"] == DBNull.Value ? null : reader["Justificacion"].ToString(),
+
+            PresupuestoSolicitado = Convert.ToDecimal(reader["PresupuestoSolicitado"]),
+            PresupuestoAprobado = Convert.ToDecimal(reader["PresupuestoAprobado"]),
+
+            Estado = reader["Estado"].ToString() ?? "",
+            ComentarioRevision = reader["ComentarioRevision"] == DBNull.Value ? null : reader["ComentarioRevision"].ToString(),
+
+            FechaCreacion = Convert.ToDateTime(reader["FechaCreacion"]),
+            FechaRevision = reader["FechaRevision"] == DBNull.Value ? null : Convert.ToDateTime(reader["FechaRevision"]),
+            FechaCompletado = reader["FechaCompletado"] == DBNull.Value ? null : Convert.ToDateTime(reader["FechaCompletado"])
+        };
+    }
 
 }

@@ -53,6 +53,15 @@
                                     </a>
                                 </li>
                             }
+
+                            @if (rol == "Admin" || rol == "Supervisor")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="CompletarProyecto" asp-action="Index">
+                                        Completar Proyecto
+                                    </a>
+                                </li>
+                            }
                         }
                     </ul>
                 </div>

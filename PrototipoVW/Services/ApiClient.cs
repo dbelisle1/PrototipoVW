@@ -276,6 +276,36 @@ namespace PrototipoVW.Services
             return response.IsSuccessStatusCode;
         }
 
+        public async Task<List<PropuestaListItemViewModel>> ListarProyectosAprobadosAsync()
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, "api/completarproyecto");
+            AgregarHeadersSesion(request);
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return new List<PropuestaListItemViewModel>();
+            }
+
+            var propuestas = await response.Content.ReadFromJsonAsync<List<PropuestaListItemViewModel>>(JsonOptions);
+
+            return propuestas ?? new List<PropuestaListItemViewModel>();
+        }
+
+        public async Task<bool> CompletarProyectoAsync(int idPropuesta)
+        {
+            using var request = new HttpRequestMessage(
+                HttpMethod.Post,
+                $"api/completarproyecto/{idPropuesta}/completar");
+
+            AgregarHeadersSesion(request);
+
+            var response = await _httpClient.SendAsync(request);
+
+            return response.IsSuccessStatusCode;
+        }
+
 
         private void AgregarHeadersSesion(HttpRequestMessage request)
         {
