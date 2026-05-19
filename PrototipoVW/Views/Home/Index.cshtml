@@ -6,10 +6,3 @@
 
 <p>Bienvenido, @ViewBag.NombreCompleto</p>
 
-<form asp-action="Logout" asp-controller="Auth" method="post">
-    @Html.AntiForgeryToken()
-
-    <button type="submit" class="btn btn-danger">
-        Cerrar sesión
-    </button>
-</form>

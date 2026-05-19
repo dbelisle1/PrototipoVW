@@ -71,6 +71,14 @@
                                     </a>
                                 </li>
                             }
+
+                            <form class="d-flex" asp-action="Logout" asp-controller="Auth" method="post">
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    Cerrar sesión
+                                </button>
+                            </form>
                         }
                     </ul>
                 </div>
