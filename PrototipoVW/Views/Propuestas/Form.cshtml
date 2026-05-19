@@ -3,17 +3,27 @@
 @{
     var esEdicion = Model.IdPropuesta > 0;
     var soloLectura = ViewBag.SoloLectura == true;
+    var mostrarRevision = ViewBag.MostrarRevision == true;
 
-    ViewData["Title"] = soloLectura
-        ? "Ver propuesta"
-        : esEdicion
-            ? "Modificar propuesta"
-            : "Agregar propuesta";
+    ViewData["Title"] = mostrarRevision
+        ? "Estado de propuesta"
+        : soloLectura
+            ? "Ver propuesta"
+            : esEdicion
+                ? "Modificar propuesta"
+                : "Agregar propuesta";
 
     var accion = esEdicion ? "Edit" : "Create";
 }
 
 <h2>@ViewData["Title"]</h2>
+
+@if (mostrarRevision)
+{
+    <div class="alert @(Model.Estado == "Aprobado" ? "alert-success" : "alert-danger")">
+        <strong>Estado:</strong> @Model.Estado
+    </div>
+}
 
 <form asp-action="@accion" asp-controller="Propuestas" method="post">
     @Html.AntiForgeryToken()
@@ -53,6 +63,23 @@
                readonly="@soloLectura" />
         <span asp-validation-for="PresupuestoSolicitado" class="text-danger"></span>
     </div>
+
+    @if (mostrarRevision)
+    {
+        <div class="mb-3">
+            <label asp-for="PresupuestoAprobado" class="form-label">Presupuesto aprobado</label>
+            <input asp-for="PresupuestoAprobado"
+                   class="form-control"
+                   type="number"
+                   step="0.01"
+                   readonly />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ComentarioRevision" class="form-label">Comentario de revisión</label>
+            <textarea asp-for="ComentarioRevision" class="form-control" rows="3" readonly></textarea>
+        </div>
+    }
 
     <div class="text-danger mb-3">
         @Html.ValidationSummary()

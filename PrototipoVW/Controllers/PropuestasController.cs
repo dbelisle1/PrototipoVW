@@ -117,7 +117,7 @@ public class PropuestasController : Controller
     }
 
     [HttpGet]
-    [Supervisor]
+    [AdminSupervisor]
     public async Task<IActionResult> Ver(int id)
     {
         var propuesta = await _apiClient.ObtenerPropuestaPorIdAsync(id);
@@ -154,5 +154,29 @@ public class PropuestasController : Controller
 
         TempData["Mensaje"] = "Propuesta eliminada correctamente.";
         return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    [General]
+    public async Task<IActionResult> VerEstado(int id)
+    {
+        var propuesta = await _apiClient.ObtenerPropuestaPorIdAsync(id);
+
+        if (propuesta == null)
+        {
+            TempData["Error"] = "Propuesta no encontrada.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        if (propuesta.Estado != "Aprobado" && propuesta.Estado != "Rechazado")
+        {
+            TempData["Error"] = "Solo se puede consultar el estado de propuestas aprobadas o rechazadas.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        ViewBag.SoloLectura = true;
+        ViewBag.MostrarRevision = true;
+
+        return View("Form", propuesta);
     }
 }

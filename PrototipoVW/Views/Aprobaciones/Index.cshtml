@@ -1,0 +1,72 @@
+﻿@model List<PrototipoVW.Models.PropuestaListItemViewModel>
+
+@{
+    ViewData["Title"] = "Aprobación de propuestas";
+}
+
+<h2>Aprobación de propuestas</h2>
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Mensaje"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Proyecto</th>
+            <th>Área</th>
+            <th>Creador</th>
+            <th>Presupuesto solicitado</th>
+            <th>Fecha creación</th>
+            <th style="width: 180px;">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Count == 0)
+        {
+            <tr>
+                <td colspan="6" class="text-center">
+                    No hay propuestas pendientes de aprobación.
+                </td>
+            </tr>
+        }
+        else
+        {
+            foreach (var propuesta in Model)
+            {
+                <tr>
+                    <td>@propuesta.NombreProyecto</td>
+                    <td>@propuesta.AreaSolicitante</td>
+                    <td>@propuesta.Creador</td>
+                    <td>@propuesta.PresupuestoSolicitado.ToString("N2")</td>
+                    <td>@propuesta.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>
+                        <a asp-action="Aprobar"
+                           asp-controller="Aprobaciones"
+                           asp-route-id="@propuesta.IdPropuesta"
+                           class="btn btn-sm btn-success">
+                            Aprobar
+                        </a>
+
+                        <a asp-action="Rechazar"
+                           asp-controller="Aprobaciones"
+                           asp-route-id="@propuesta.IdPropuesta"
+                           class="btn btn-sm btn-danger">
+                            Rechazar
+                        </a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

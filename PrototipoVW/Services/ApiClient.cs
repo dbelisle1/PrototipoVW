@@ -119,24 +119,6 @@ namespace PrototipoVW.Services
             return response.IsSuccessStatusCode;
         }
 
-        private void AgregarHeadersSesion(HttpRequestMessage request)
-        {
-            var session = _httpContextAccessor.HttpContext?.Session;
-
-            if (session == null)
-            {
-                return;
-            }
-
-            var idUsuario = session.GetInt32("IdUsuario");
-            var rol = session.GetString("Rol");
-
-            if (idUsuario != null && !string.IsNullOrWhiteSpace(rol))
-            {
-                request.Headers.Add("X-User-Id", idUsuario.Value.ToString());
-                request.Headers.Add("X-User-Role", rol);
-            }
-        }
 
         public async Task<List<PropuestaListItemViewModel>> ListarPropuestasAsync()
         {
@@ -216,6 +198,102 @@ namespace PrototipoVW.Services
             var response = await _httpClient.SendAsync(request);
 
             return response.IsSuccessStatusCode;
+        }
+        public async Task<List<PropuestaListItemViewModel>> ListarPropuestasPendientesAprobacionAsync()
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, "api/aprobaciones");
+            AgregarHeadersSesion(request);
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return new List<PropuestaListItemViewModel>();
+            }
+
+            var propuestas = await response.Content.ReadFromJsonAsync<List<PropuestaListItemViewModel>>(JsonOptions);
+
+            return propuestas ?? new List<PropuestaListItemViewModel>();
+        }
+
+        public async Task<AprobacionFormViewModel?> ObtenerPropuestaAprobacionAsync(int idPropuesta)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, $"api/aprobaciones/{idPropuesta}");
+            AgregarHeadersSesion(request);
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            var propuesta = await response.Content.ReadFromJsonAsync<AprobacionFormViewModel>(JsonOptions);
+
+            if (propuesta != null)
+            {
+                propuesta.PresupuestoAprobado = propuesta.PresupuestoSolicitado;
+            }
+
+            return propuesta;
+        }
+
+        public async Task<bool> AprobarPropuestaAsync(AprobacionFormViewModel model)
+        {
+            using var request = new HttpRequestMessage(
+                HttpMethod.Post,
+                $"api/aprobaciones/{model.IdPropuesta}/aprobar");
+
+            AgregarHeadersSesion(request);
+
+            request.Content = JsonContent.Create(new
+            {
+                model.PresupuestoAprobado,
+                model.ComentarioRevision
+            });
+
+            var response = await _httpClient.SendAsync(request);
+
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> RechazarPropuestaAsync(AprobacionFormViewModel model)
+        {
+            using var request = new HttpRequestMessage(
+                HttpMethod.Post,
+                $"api/aprobaciones/{model.IdPropuesta}/rechazar");
+
+            AgregarHeadersSesion(request);
+
+            request.Content = JsonContent.Create(new
+            {
+                PresupuestoAprobado = 0,
+                model.ComentarioRevision
+            });
+
+            var response = await _httpClient.SendAsync(request);
+
+            return response.IsSuccessStatusCode;
+        }
+
+
+        private void AgregarHeadersSesion(HttpRequestMessage request)
+        {
+            var session = _httpContextAccessor.HttpContext?.Session;
+
+            if (session == null)
+            {
+                return;
+            }
+
+            var idUsuario = session.GetInt32("IdUsuario");
+            var rol = session.GetString("Rol");
+
+            if (idUsuario != null && !string.IsNullOrWhiteSpace(rol))
+            {
+                request.Headers.Add("X-User-Id", idUsuario.Value.ToString());
+                request.Headers.Add("X-User-Role", rol);
+            }
         }
     }
 }

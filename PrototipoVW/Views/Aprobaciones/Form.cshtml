@@ -1,0 +1,95 @@
+﻿@model PrototipoVW.Models.AprobacionFormViewModel
+
+@{
+    var accion = ViewBag.Accion as string ?? "Aprobar";
+    var esRechazo = accion == "Rechazar";
+
+    ViewData["Title"] = esRechazo ? "Rechazar propuesta" : "Aprobar propuesta";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="@accion" asp-controller="Aprobaciones" method="post">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="IdPropuesta" />
+    <input type="hidden" asp-for="NombreProyecto" />
+    <input type="hidden" asp-for="Descripcion" />
+    <input type="hidden" asp-for="AreaSolicitante" />
+    <input type="hidden" asp-for="Justificacion" />
+    <input type="hidden" asp-for="Creador" />
+    <input type="hidden" asp-for="PresupuestoSolicitado" />
+
+    <div class="mb-3">
+        <label class="form-label">Nombre del proyecto</label>
+        <input value="@Model.NombreProyecto" class="form-control" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Creador</label>
+        <input value="@Model.Creador" class="form-control" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Área solicitante</label>
+        <input value="@Model.AreaSolicitante" class="form-control" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Descripción</label>
+        <textarea class="form-control" rows="3" readonly>@Model.Descripcion</textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Justificación</label>
+        <textarea class="form-control" rows="3" readonly>@Model.Justificacion</textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Presupuesto solicitado</label>
+        <input value="@Model.PresupuestoSolicitado.ToString("N2")" class="form-control" readonly />
+    </div>
+
+    @if (!esRechazo)
+    {
+        <div class="mb-3">
+            <label asp-for="PresupuestoAprobado" class="form-label">Presupuesto aprobado</label>
+            <input asp-for="PresupuestoAprobado"
+                   class="form-control"
+                   type="number"
+                   step="0.01" />
+            <span asp-validation-for="PresupuestoAprobado" class="text-danger"></span>
+        </div>
+    }
+    else
+    {
+        <input type="hidden" asp-for="PresupuestoAprobado" value="0" />
+    }
+
+    <div class="mb-3">
+        <label asp-for="ComentarioRevision" class="form-label">Comentario de revisión</label>
+        <textarea asp-for="ComentarioRevision" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="ComentarioRevision" class="text-danger"></span>
+    </div>
+
+    <div class="text-danger mb-3">
+        @Html.ValidationSummary()
+    </div>
+
+    @if (esRechazo)
+    {
+        <button type="submit" class="btn btn-danger">
+            Rechazar
+        </button>
+    }
+    else
+    {
+        <button type="submit" class="btn btn-success">
+            Aprobar
+        </button>
+    }
+
+    <a asp-action="Index" asp-controller="Aprobaciones" class="btn btn-secondary">
+        Cancelar
+    </a>
+</form>

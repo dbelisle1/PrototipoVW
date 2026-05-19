@@ -143,4 +143,43 @@ public class PropuestasRepository
             FechaCompletado = reader["FechaCompletado"] == DBNull.Value ? null : Convert.ToDateTime(reader["FechaCompletado"])
         };
     }
+    public async Task AprobarAsync(
+    int idPropuesta,
+    int idUsuarioRevisor,
+    decimal presupuestoAprobado,
+    string? comentarioRevision)
+    {
+        await using var connection = new SqlConnection(_connectionString);
+        await using var command = new SqlCommand("dbo.sp_AprobarPropuesta", connection);
+
+        command.CommandType = CommandType.StoredProcedure;
+        command.Parameters.Add("@IdPropuesta", SqlDbType.Int).Value = idPropuesta;
+        command.Parameters.Add("@IdUsuarioRevisor", SqlDbType.Int).Value = idUsuarioRevisor;
+        command.Parameters.Add("@PresupuestoAprobado", SqlDbType.Decimal).Value = presupuestoAprobado;
+        command.Parameters.Add("@ComentarioRevision", SqlDbType.NVarChar, 500).Value =
+            string.IsNullOrWhiteSpace(comentarioRevision) ? DBNull.Value : comentarioRevision;
+
+        await connection.OpenAsync();
+        await command.ExecuteNonQueryAsync();
+    }
+
+    public async Task RechazarAsync(
+        int idPropuesta,
+        int idUsuarioRevisor,
+        string? comentarioRevision)
+    {
+        await using var connection = new SqlConnection(_connectionString);
+        await using var command = new SqlCommand("dbo.sp_RechazarPropuesta", connection);
+
+        command.CommandType = CommandType.StoredProcedure;
+        command.Parameters.Add("@IdPropuesta", SqlDbType.Int).Value = idPropuesta;
+        command.Parameters.Add("@IdUsuarioRevisor", SqlDbType.Int).Value = idUsuarioRevisor;
+        command.Parameters.Add("@ComentarioRevision", SqlDbType.NVarChar, 500).Value =
+            string.IsNullOrWhiteSpace(comentarioRevision) ? DBNull.Value : comentarioRevision;
+
+        await connection.OpenAsync();
+        await command.ExecuteNonQueryAsync();
+    }
+
+
 }

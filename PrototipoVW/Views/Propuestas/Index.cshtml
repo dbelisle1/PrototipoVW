@@ -7,7 +7,7 @@
     var idUsuario = ViewBag.IdUsuario as int?;
 
     var puedeAgregar = rol == "Admin" || rol == "Empleado";
-    var puedeVer = rol == "Supervisor";
+    var puedeVerSupervisor = rol == "Admin" || rol == "Supervisor";
 }
 
 <h2>Propuestas de proyectos</h2>
@@ -45,7 +45,7 @@
             <th>Presupuesto solicitado</th>
             <th>Presupuesto aprobado</th>
             <th>Fecha creación</th>
-            <th style="width: 220px;">Acciones</th>
+            <th style="width: 240px;">Acciones</th>
         </tr>
     </thead>
     <tbody>
@@ -61,8 +61,11 @@
         {
             foreach (var propuesta in Model)
             {
+                var estaPendiente = propuesta.Estado == "Pendiente";
+                var tieneRevision = propuesta.Estado == "Aprobado" || propuesta.Estado == "Rechazado";
+
                 var puedeModificar =
-                propuesta.Estado == "Pendiente" &&
+                estaPendiente &&
                 (
                 rol == "Admin" ||
                 (rol == "Empleado" && propuesta.IdCreador == idUsuario)
@@ -77,7 +80,16 @@
                     <td>@propuesta.PresupuestoAprobado.ToString("N2")</td>
                     <td>@propuesta.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</td>
                     <td>
-                        @if (puedeVer)
+                        @if (tieneRevision)
+                        {
+                            <a asp-action="VerEstado"
+                               asp-controller="Propuestas"
+                               asp-route-id="@propuesta.IdPropuesta"
+                               class="btn btn-sm btn-info">
+                                Ver estado
+                            </a>
+                        }
+                        else if (puedeVerSupervisor)
                         {
                             <a asp-action="Ver"
                                asp-controller="Propuestas"
