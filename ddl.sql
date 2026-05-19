@@ -181,11 +181,11 @@ END;
 GO
 
 
-CREATE  PROCEDURE sp_ActualizarUsuario
+CREATE OR ALTER PROCEDURE dbo.sp_ActualizarUsuario
     @IdUsuario INT,
     @NombreCompleto NVARCHAR(100),
     @Correo NVARCHAR(100),
-    @Contrasena NVARCHAR(100),
+    @Contrasena NVARCHAR(100) = NULL,
     @Rol NVARCHAR(20)
 AS
 BEGIN
@@ -195,7 +195,11 @@ BEGIN
     SET
         NombreCompleto = @NombreCompleto,
         Correo = @Correo,
-        Contrasena = @Contrasena,
+        Contrasena = CASE 
+            WHEN @Contrasena IS NULL OR LTRIM(RTRIM(@Contrasena)) = '' 
+                THEN Contrasena
+            ELSE @Contrasena
+        END,
         Rol = @Rol
     WHERE IdUsuario = @IdUsuario
       AND Activo = 1;
